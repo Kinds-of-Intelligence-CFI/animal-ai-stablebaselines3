@@ -1,0 +1,39 @@
+[project]
+name        = "animalai-stable-baselines"
+version     = "0.1.0"
+description = "A template repository integrating AnimalAI with Stable Baselines3."
+readme      = "README.md"
+authors     = [{ name = "Wout Schellaert", email = "wout.schellaert@gmail.com" }]
+
+# - AnimalAI == 3.0.5
+#   requires Python >=3.6, <3.10
+#   requires ml-agents== 0.30.0
+#   ..requires "torch>=1.8.0,<=1.11.0;(platform_system!='Windows' and python_version>='3.9')",
+#   ..requires "torch>=1.6.0,<1.9.0;(platform_system!='Windows' and python_version<'3.9')",
+#
+# - Stable Baselines3 == 2.0.0
+#   requires gymnasium==0.28.1
+#   requires torch>=1.11
+#   Note: Later version of Stable Baselines require "torch>=1.13", which is not compatible with ml-agents.
+dependencies = [
+    "animalai==3.0.5",
+    "gymnasium>=0.27.0",
+    "stable-baselines3<2.1.0",
+]
+requires-python = ">= 3.9"
+
+[project.scripts]
+train = "animalai_stable_baselines.train:main"
+play  = "animalai_stable_baselines.play:main"
+
+[build-system]
+requires      = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.rye]
+managed          = true
+dev-dependencies = []
+
+
+[tool.hatch.metadata]
+allow-direct-references = true

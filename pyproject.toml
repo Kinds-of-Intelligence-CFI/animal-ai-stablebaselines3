@@ -12,14 +12,9 @@ authors     = [{ name = "Wout Schellaert", email = "wout.schellaert@gmail.com" }
 #   ..requires "torch>=1.6.0,<1.9.0;(platform_system!='Windows' and python_version<'3.9')",
 #
 # - Stable Baselines3 == 2.0.0
-#   requires gymnasium==0.28.1
 #   requires torch>=1.11
 #   Note: Later version of Stable Baselines require "torch>=1.13", which is not compatible with ml-agents.
-dependencies = [
-    "animalai==3.0.5",
-    "gymnasium>=0.27.0",
-    "stable-baselines3<2.1.0",
-]
+dependencies    = ["animalai==3.0.5", "stable-baselines3<2.1.0", "shimmy>=0.2.1"]
 requires-python = ">= 3.9"
 
 [project.scripts]

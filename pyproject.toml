@@ -5,7 +5,7 @@ description = "A template repository integrating AnimalAI with Stable Baselines3
 readme      = "README.md"
 authors     = [{ name = "Wout Schellaert", email = "wout.schellaert@gmail.com" }]
 
-# - AnimalAI == 3.0.5
+# - AnimalAI == 4.0.1
 #   requires Python >=3.6, <3.10
 #   requires ml-agents== 0.30.0
 #   ..requires "torch>=1.8.0,<=1.11.0;(platform_system!='Windows' and python_version>='3.9')",
@@ -14,7 +14,7 @@ authors     = [{ name = "Wout Schellaert", email = "wout.schellaert@gmail.com" }
 # - Stable Baselines3 == 2.0.0
 #   requires torch>=1.11
 #   Note: Later version of Stable Baselines require "torch>=1.13", which is not compatible with ml-agents.
-dependencies    = ["animalai==3.0.5", "stable-baselines3<2.1.0", "shimmy>=0.2.1"]
+dependencies    = ["animalai==4.0.1", "stable-baselines3<2.1.0", "shimmy>=0.2.1"]
 requires-python = ">= 3.9"
 
 [project.scripts]

@@ -8,7 +8,7 @@ logging.basicConfig(
     format="[%(asctime)s] [%(levelname)-8s] [%(module)s] %(message)s",
     level=logging.INFO,
 )
-from animalai.envs.environment import AnimalAIEnvironment
+from animalai.environment import AnimalAIEnvironment
 
 import animalai_stable_baselines.utils as utils
 

@@ -5,64 +5,96 @@
 #   pre: false
 #   features: []
 #   all-features: false
+#   with-sources: false
+#   generate-hashes: false
 
 -e file:.
-absl-py==2.0.0
-animalai==3.0.5
-attrs==23.1.0
-cachetools==5.3.2
-cattrs==1.5.0
-certifi==2023.11.17
-charset-normalizer==3.3.2
+animalai==4.0.1
+    # via animalai-stable-baselines
 cloudpickle==3.0.0
+    # via gym
+    # via gymnasium
+    # via mlagents-envs
+    # via stable-baselines3
 contourpy==1.2.0
+    # via matplotlib
 cycler==0.12.1
+    # via matplotlib
 farama-notifications==0.0.4
+    # via gymnasium
 filelock==3.13.1
+    # via mlagents-envs
 fonttools==4.46.0
-google-auth==2.25.2
-google-auth-oauthlib==1.1.0
+    # via matplotlib
 grpcio==1.60.0
+    # via mlagents-envs
 gym==0.26.2
+    # via mlagents-envs
+    # via pettingzoo
 gym-notices==0.0.8
+    # via gym
 gymnasium==0.28.1
-h5py==3.10.0
-idna==3.6
+    # via shimmy
+    # via stable-baselines3
 importlib-metadata==7.0.0
+    # via gym
+    # via gymnasium
 importlib-resources==6.1.1
+    # via matplotlib
 jax-jumpy==1.0.0
+    # via gymnasium
 kiwisolver==1.4.5
-markdown==3.5.1
-markupsafe==2.1.3
+    # via matplotlib
 matplotlib==3.8.2
-mlagents==0.30.0
+    # via stable-baselines3
 mlagents-envs==0.30.0
+    # via animalai
 numpy==1.21.2
-oauthlib==3.2.2
+    # via animalai
+    # via contourpy
+    # via gym
+    # via gymnasium
+    # via jax-jumpy
+    # via matplotlib
+    # via mlagents-envs
+    # via pandas
+    # via pettingzoo
+    # via shimmy
+    # via stable-baselines3
 packaging==23.2
+    # via matplotlib
 pandas==2.0.3
+    # via stable-baselines3
 pettingzoo==1.15.0
+    # via mlagents-envs
 pillow==10.1.0
+    # via matplotlib
+    # via mlagents-envs
 protobuf==3.20.3
-pyasn1==0.5.1
-pyasn1-modules==0.3.0
+    # via animalai
+    # via mlagents-envs
 pyparsing==3.1.1
+    # via matplotlib
 python-dateutil==2.8.2
+    # via matplotlib
+    # via pandas
 pytz==2023.3.post1
+    # via pandas
 pyyaml==6.0.1
-requests==2.31.0
-requests-oauthlib==1.3.1
-rsa==4.9
+    # via mlagents-envs
 shimmy==1.3.0
+    # via animalai-stable-baselines
 six==1.16.0
+    # via python-dateutil
 stable-baselines3==2.0.0
-tensorboard==2.15.1
-tensorboard-data-server==0.7.2
+    # via animalai-stable-baselines
 torch==1.11.0
+    # via stable-baselines3
 typing-extensions==4.9.0
+    # via gymnasium
+    # via torch
 tzdata==2023.3
-urllib3==2.1.0
-werkzeug==3.0.1
+    # via pandas
 zipp==3.17.0
-# The following packages are considered to be unsafe in a requirements file:
-setuptools==69.0.2
+    # via importlib-metadata
+    # via importlib-resources

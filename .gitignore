@@ -10,3 +10,9 @@ wheels/
 
 # venv
 .venv
+
+# logdir
+logdir*
+
+# wandb
+wandb*

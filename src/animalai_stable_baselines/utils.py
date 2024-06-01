@@ -1,3 +1,4 @@
+from datetime import datetime
 from pathlib import Path
 
 
@@ -35,3 +36,13 @@ def find_env_path(base: Path) -> Path:
         raise FileNotFoundError(f"{error_msg}\n\nReason: {reason}")
 
     return binaries[0]
+
+def make_logdir(logdir: Path, task: Path) -> Path:
+    date = datetime.now().strftime("%Y_%m_%d_%H_%M")
+    if logdir is not None:
+        logdir = logdir
+    else:
+        logdir = Path("./aai/logdir/") / f'training-{date}'
+    logdir.mkdir(parents=True, exist_ok=True)
+
+    return logdir

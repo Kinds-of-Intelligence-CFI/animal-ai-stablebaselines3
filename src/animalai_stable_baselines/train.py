@@ -1,5 +1,6 @@
 # ruff: noqa: E402
 import logging
+import os
 import random
 from pathlib import Path
 
@@ -20,8 +21,8 @@ import animalai_stable_baselines.utils as utils
 
 
 def algorithm_choice(algorithm_name):
-    algorithm_name = algorithm_name.lower()
-    algorithm_types = ['a2c', 'dqn', 'ppo', 'recurrent_ppo']
+    algorithm_name=algorithm_name.lower()
+    algorithm_types=['a2c', 'dqn', 'ppo', 'recurrent_ppo']
     if algorithm_name not in algorithm_types:
         raise ValueError("Invalid algorithm type. The following have been explicitly tested in AAI: %s. Add further options from stable-baselines3 to the algorithm_choice function in the train.py file." % algorithm_types)
     else:
@@ -95,15 +96,15 @@ def train(task: Path,
 
     elif observations == 'camera':
 
-        res = resolution
-        camera = True
-        raycast = False
-        grayscale = grayscale
+        res=resolution
+        camera=True
+        raycast=False
+        grayscale=grayscale
 
         if algorithm.lower() == 'recurrent_ppo':
-            policy = "CnnLstmPolicy"
+            policy="CnnLstmPolicy"
         else:
-            policy = "CnnPolicy"
+            policy="CnnPolicy"
     else:
         raise ValueError("Choose 'raycast' or 'camera' observations.")
     
@@ -132,14 +133,14 @@ def train(task: Path,
     # Create an AnimalAI environment
     env = AnimalAIEnvironment(
         file_name=env_path,
-        log_folder= logdir,
+        log_folder=logdir,
         arenas_configurations=task,
-        base_port = 5500 + random.randint(0, 1000),
+        base_port=5500 + random.randint(0, 1000),
         resolution=res,
         useCamera=camera,
         useRayCasts=raycast,
-        raysPerSide = (res-1)/2 if raycast else 2,
-        rayMaxDegrees = raycast_degrees if raycast else 60,
+        raysPerSide=(res-1)/2 if raycast else 2,
+        rayMaxDegrees=raycast_degrees if raycast else 60,
         no_graphics=no_graphics,
         grayscale=grayscale,
         timescale=aai_timescale,
@@ -162,22 +163,22 @@ def train(task: Path,
                               env,  # type: ignore
                               device=device,
                               verbose=1,
-                              tensorboard_log=f"./tensorboard/runs/{run.id}" if wandb else None
+                              tensorboard_log=os.path.join(logdir, f"tensorboard/runs/{run.id}") if wandb else None
                               )
         reset_num_timesteps = True
     else:
         model = sb3_algorithm.load(from_checkpoint)
-        reset_num_timesteps = False
+        reset_num_timesteps=False
     
     per_save_steps = timesteps/numsaves
 
     for saves in range(numsaves):
         model.learn(total_timesteps=per_save_steps, 
                     reset_num_timesteps=reset_num_timesteps,
-                    callback = None if not wandb else WandbCallback(),
+                    callback=None if not wandb else WandbCallback(),
                     )
-        model.save(logdir / f'/training-{(saves+1)*per_save_steps}')
-        reset_num_timesteps = False
+        model.save(os.path.join(logdir, f'training-{(saves+1)*per_save_steps}'))
+        reset_num_timesteps=False
     
     env.close()
 
@@ -189,12 +190,12 @@ def main():
 
     print("Running PPO for 1M steps on sanityGreen using 72x72 colour camera observations")
     
-    train(task = Path("./aai/configs/sanityGreen.yml"),
-          algorithm = "ppo",
-          observations = 'camera',
-          timesteps = 1_000,
-          resolution = 72,
-          numsaves = 1,
-          wandb = True
+    train(task=Path("./aai/configs/sanityGreen.yml"),
+          algorithm="ppo",
+          observations='camera',
+          timesteps=1_000,
+          resolution=72,
+          numsaves=1,
+          wandb=False
           )
 

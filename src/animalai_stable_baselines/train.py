@@ -168,6 +168,7 @@ def train(task: Path,
         reset_num_timesteps = True
     else:
         model = sb3_algorithm.load(from_checkpoint)
+        model.set_env(env)
         reset_num_timesteps=False
     
     per_save_steps = timesteps/numsaves

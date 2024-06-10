@@ -11,7 +11,7 @@ logging.basicConfig(
 )
 
 import stable_baselines3 as sb3
-
+import torch as th
 from animalai.environment import AnimalAIEnvironment
 from mlagents_envs.envs.unity_gym_env import UnityToGymWrapper
 from sb3_contrib import RecurrentPPO
@@ -21,19 +21,19 @@ import animalai_stable_baselines.utils as utils
 
 
 def algorithm_choice(algorithm_name):
-    algorithm_name=algorithm_name.lower()
-    algorithm_types=['a2c', 'dqn', 'ppo', 'recurrent_ppo']
+    algorithm_name = algorithm_name.lower()
+    algorithm_types = ['a2c', 'dqn', 'ppo', 'recurrent_ppo']
     if algorithm_name not in algorithm_types:
-        raise ValueError("Invalid algorithm type. The following have been explicitly tested in AAI: %s. Add further options from stable-baselines3 to the algorithm_choice function in the train.py file." % algorithm_types)
+        raise ValueError(
+            "Invalid algorithm type. The following have been explicitly tested in AAI: %s. Add further options from stable-baselines3 to the algorithm_choice function in the train.py file." % algorithm_types)
     else:
         algo_dict = {
-        'a2c': sb3.A2C,
-        'dqn': sb3.DQN,
-        'ppo': sb3.PPO,
-        'recurrent_ppo': RecurrentPPO
-    }
+            'a2c': sb3.A2C,
+            'dqn': sb3.DQN,
+            'ppo': sb3.PPO,
+            'recurrent_ppo': RecurrentPPO
+        }
     return algo_dict.get(algorithm_name.lower())
-
 
 
 def train(task: Path,
@@ -51,7 +51,6 @@ def train(task: Path,
           no_graphics: bool = False,
           device: str = 'auto',
           wandb: bool = False):
-
     # Argument checks
     assert from_checkpoint.exists() if from_checkpoint is not None else True, f"Checkpoint not found: {from_checkpoint}."
     assert from_checkpoint.is_file() if from_checkpoint is not None else True, f"Checkpoint must be a file but is not: {from_checkpoint}."
@@ -65,21 +64,19 @@ def train(task: Path,
 
     assert not no_graphics if observations == 'camera' else True, "No graphics mode is only possible with raycast observations, not camera observations."
     assert resolution >= 4 & resolution <= 512 if observations == 'camera' else True, "Camera observation resolution must be between 4 and 512 inclusive."
-    assert ((resolution % 2) == 1) & (resolution >= 1) if observations == 'raycast' else True, "Raycast observation resolution must be a positive odd number"
-    
-    sb3_algorithm = algorithm_choice(algorithm)
+    assert ((resolution % 2) == 1) & (
+                resolution >= 1) if observations == 'raycast' else True, "Raycast observation resolution must be a positive odd number"
 
+    sb3_algorithm = algorithm_choice(algorithm)
 
     # Make log directory
     logdir = utils.make_logdir(logdir, task)
-
 
     # Find environment
     if env is None:
         env_path = str(utils.find_env_path(Path("./aai/")))
     else:
         env_path = str(env)
-
 
     # Construct input space and policy
     if observations == 'raycast':
@@ -96,18 +93,18 @@ def train(task: Path,
 
     elif observations == 'camera':
 
-        res=resolution
-        camera=True
-        raycast=False
-        grayscale=grayscale
+        res = resolution
+        camera = True
+        raycast = False
+        grayscale = grayscale
 
         if algorithm.lower() == 'recurrent_ppo':
-            policy="CnnLstmPolicy"
+            policy = "CnnLstmPolicy"
         else:
-            policy="CnnPolicy"
+            policy = "CnnPolicy"
     else:
         raise ValueError("Choose 'raycast' or 'camera' observations.")
-    
+
     print(f"{algorithm} agent with {policy}.")
 
     # Weights & Biases Integration
@@ -123,45 +120,49 @@ def train(task: Path,
 
         run = wandb.init(project="sb3-animalai",
                          config=config,
-                         sync_tensorboard=True, #auto-upload tensorboard metrics
-                         monitor_gym=False, #auto-upload videos of agents playing game - requires stable_baselines3.common.monitor.Monitor
-                         save_code=False, #upload code running agent
+                         sync_tensorboard=True,  # auto-upload tensorboard metrics
+                         monitor_gym=False,
+                         # auto-upload videos of agents playing game - requires stable_baselines3.common.monitor.Monitor
+                         save_code=False,  # upload code running agent
                          )
 
-
+    print(type(logdir))
 
     # Create an AnimalAI environment
     env = AnimalAIEnvironment(
         file_name=env_path,
-        log_folder=logdir,
+        log_folder=str(logdir),
         arenas_configurations=task,
         base_port=5500 + random.randint(0, 1000),
         resolution=res,
         useCamera=camera,
         useRayCasts=raycast,
-        raysPerSide=(res-1)/2 if raycast else 2,
+        raysPerSide=(res - 1) / 2 if raycast else 2,
         rayMaxDegrees=raycast_degrees if raycast else 60,
         no_graphics=no_graphics,
         grayscale=grayscale,
         timescale=aai_timescale,
-        inference=False, #change to true to watch agent while training in full screen.
+        inference=False,  # change to true to watch agent while training in full screen.
     )
     # Make it compatible with legacy Gym v0.21 API
     env = UnityToGymWrapper(
         env,
         uint8_visual=True if camera else False,
         allow_multiple_obs=False,  # Also provide health, velocity (x, y, z), and global position (x, y, z)
-        flatten_branched=False if algorithm.lower() == 'recurrent_ppo' else True,  # Necessary if the agent doesn't support MultiDiscrete action space.
+        flatten_branched=True
+        # False if algorithm.lower() == 'recurrent_ppo' else True,  # Necessary if the agent doesn't support MultiDiscrete action space.
     )
 
     print("Starting training...")
     # Will automatically use Shimmy to convert the legacy Gym v0.21 API to the Gymnasium API
 
+    policy_kwargs = dict(activation_fn=th.nn.ReLU)
     # Initialise agent
     if from_checkpoint is None:
         model = sb3_algorithm(policy,
                               env,  # type: ignore
                               device=device,
+                              policy_kwargs=policy_kwargs,
                               verbose=1,
                               tensorboard_log=os.path.join(logdir, f"tensorboard/runs/{run.id}") if wandb else None
                               )
@@ -169,18 +170,18 @@ def train(task: Path,
     else:
         model = sb3_algorithm.load(from_checkpoint)
         model.set_env(env)
-        reset_num_timesteps=False
-    
-    per_save_steps = timesteps/numsaves
+        reset_num_timesteps = False
+
+    per_save_steps = timesteps / numsaves
 
     for saves in range(numsaves):
-        model.learn(total_timesteps=per_save_steps, 
+        model.learn(total_timesteps=per_save_steps,
                     reset_num_timesteps=reset_num_timesteps,
                     callback=None if not wandb else WandbCallback(),
                     )
-        model.save(os.path.join(logdir, f'training-{(saves+1)*per_save_steps}'))
-        reset_num_timesteps=False
-    
+        model.save(os.path.join(logdir, f'training-{(saves + 1) * per_save_steps}'))
+        reset_num_timesteps = False
+
     env.close()
 
     if wandb:
@@ -188,15 +189,17 @@ def train(task: Path,
 
 
 def main():
-
     print("Running PPO for 1M steps on sanityGreen using 72x72 colour camera observations")
-    
+
     train(task=Path("./aai/configs/sanityGreen.yml"),
-          algorithm="ppo",
+          algorithm="recurrent_ppo",
           observations='camera',
-          timesteps=1_000,
-          resolution=72,
+          timesteps=100_000,
+          resolution=64,
           numsaves=1,
-          wandb=False
+          wandb=True
           )
 
+
+if __name__ == "__main__":
+    main()

@@ -16,3 +16,8 @@ logdir*
 
 # wandb
 wandb*
+
+# pycharm-specific
+.idea/
+.DS_Store
+
